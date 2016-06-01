@@ -22,7 +22,7 @@
  *  @return
  */
 static CGFloat DDPMAX_TABLEVIEW_HEIGHT(){
-    return [UIScreen mainScreen].bounds.size.height * 0.6f;
+    return MAX([UIScreen mainScreen].bounds.size.height * 0.6f, 360);
 }
 
 static CGFloat DDP_TABLEVIEW_HEIGHT = 0.f;
@@ -273,24 +273,29 @@ UITableViewDataSource
                      animations:^{
                          [menuWeakSelf.tableView layoutIfNeeded];
                          [menuWeakSelf.tableView reloadData];
-                         CGRect bound = CGRectMake(0.f, 0.f, menuWeakSelf.dropWidth,DDP_TABLEVIEW_HEIGHT - 1.f );
-                         UIBezierPath *maskPath;
+//                         CGRect bound = CGRectMake(0.f, 0.f, menuWeakSelf.dropWidth,DDP_TABLEVIEW_HEIGHT - 1.f );
+//                         UIBezierPath *maskPath;
                          switch (self.borderType) {
                              case DTKDropdownBorderDefault:
-                                 maskPath = [UIBezierPath bezierPathWithRoundedRect:bound byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(6.f, 6.f)];
+//                                 maskPath = [UIBezierPath bezierPathWithRoundedRect:bound byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(6.f, 6.f)];
+                                 menuWeakSelf.tableView.layer.cornerRadius = 6.f;
+                                 menuWeakSelf.tableView.layer.masksToBounds = YES;
                                  break;
                              case DTKDropdownBorderRect:
-                                 maskPath = [UIBezierPath bezierPathWithRect:bound];
+//                                 maskPath = [UIBezierPath bezierPathWithRect:bound];
+                                 menuWeakSelf.tableView.layer.cornerRadius = 0.f;
+                                 menuWeakSelf.tableView.layer.masksToBounds = YES;
                                  break;
                                  
                              default:
                                  break;
                          }
+                         menuWeakSelf.tableView.backgroundColor = menuWeakSelf.cellColor;
                          
-                         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-                         maskLayer.frame = bound;
-                         maskLayer.path = maskPath.CGPath;
-                         menuWeakSelf.tableView.layer.mask = maskLayer;
+//                         CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+//                         maskLayer.frame = bound;
+//                         maskLayer.path = maskPath.CGPath;
+//                         menuWeakSelf.tableView.layer.mask = maskLayer;
                          menuWeakSelf.backgroundView.alpha = self.backgroundAlpha;
                      } completion:^(BOOL finished) {
                          menuWeakSelf.titleButton.enabled = YES;
@@ -351,6 +356,9 @@ UITableViewDataSource
         [subview removeFromSuperview];
     }
     
+    cell.imageView.image = nil;
+    cell.textLabel.text = nil;
+    
     __block DTKDropdownItem *item = self.items[indexPath.row];
     
     __weak DTKDropdownMenuView *wself = self;
@@ -374,7 +382,7 @@ UITableViewDataSource
             [cell.contentView addSubview:button];
             [button mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
-                make.left.mas_equalTo(cell.contentView).offset(10);
+                make.left.mas_equalTo(cell.contentView).offset(item.iconOffsetX);
                 make.size.mas_equalTo(CGSizeMake(image.size.width, image.size.height));
             }];
             
@@ -400,8 +408,8 @@ UITableViewDataSource
             [cell.contentView addSubview:textLabel];
             [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
-                make.left.mas_equalTo(button.mas_right).offset(10);
-                make.right.mas_equalTo(cell.contentView).offset(-10);
+                make.left.mas_equalTo(button.mas_right).offset(item.titleOffsetX);
+                make.right.mas_equalTo(cell.contentView).offset(-item.titleOffsetX);
                 make.height.mas_equalTo(wself.cellHeight);
             }];
 
@@ -414,7 +422,7 @@ UITableViewDataSource
             [cell.contentView addSubview:switchBtn];
             [switchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
-                make.left.mas_equalTo(cell.contentView).offset(10);
+                make.left.mas_equalTo(cell.contentView).offset(item.iconOffsetX);
                 make.size.mas_equalTo(CGSizeMake(60, 30));
             }];
             
@@ -448,8 +456,8 @@ UITableViewDataSource
             [cell.contentView addSubview:textLabel];
             [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
-                make.left.mas_equalTo(switchBtn.mas_right);
-                make.right.mas_equalTo(cell.contentView).offset(-10);
+                make.left.mas_equalTo(switchBtn.mas_right).offset(item.titleOffsetX);
+                make.right.mas_equalTo(cell.contentView).offset(-item.titleOffsetX);
                 make.height.mas_equalTo(wself.cellHeight);
             }];
         }
@@ -492,19 +500,19 @@ UITableViewDataSource
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-        [cell setSeparatorInset:UIEdgeInsetsZero];
+        [cell setSeparatorInset:self.cellSeparatorEdgeInsets];
     }
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsZero];
+        [cell setLayoutMargins:self.cellSeparatorEdgeInsets];
     }
     if([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]){
         [cell setPreservesSuperviewLayoutMargins:NO];
     }
     if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-        [tableView setSeparatorInset:UIEdgeInsetsMake(0,0,0,0)];
+        [tableView setSeparatorInset:self.cellSeparatorEdgeInsets];
     }
     if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-        [tableView setLayoutMargins:UIEdgeInsetsMake(0,0,0,0)];
+        [tableView setLayoutMargins:self.cellSeparatorEdgeInsets];
     }
 }
 
@@ -798,7 +806,7 @@ UITableViewDataSource
 
 + (instancetype)Item
 {
-    return [[self alloc]init];
+    return [[[self class] alloc]init];
 }
 + (instancetype)itemWithTitle:(NSString *)title callBack:(dropMenuCallBack)callBack
 {
@@ -820,7 +828,23 @@ UITableViewDataSource
     item.iconNameSelected = iconNameSelected;
     item.type = type;
     item.callBack = callBack;
+    
+    item.iconOffsetX = 10;
+    item.titleOffsetX = 10;
+
     return item;
+}
+
+-(CGFloat)iconOffsetX{
+    
+    return _iconOffsetX >= 0 ? _iconOffsetX : 10;
+    
+}
+
+- (CGFloat)titleOffsetX{
+    
+    return _titleOffsetX >= 0 ? _titleOffsetX : 10;
+    
 }
 
 @end

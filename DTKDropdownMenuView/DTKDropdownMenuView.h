@@ -47,6 +47,8 @@ typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
 @property (strong, nonatomic) UIFont  *textFont;
 /// 下拉菜单 cell seprator color 默认 白色
 @property (strong, nonatomic) UIColor *cellSeparatorColor;
+/// 下拉菜单 cell seprator color 默认 白色
+@property (assign, nonatomic) UIEdgeInsets cellSeparatorEdgeInsets;
 /// 下拉菜单 cell accessory check mark color 默认 默认白色
 @property (strong, nonatomic) UIColor *cellAccessoryCheckmarkColor;
 /// 下拉菜单 cell 高度 默认 40.f
@@ -77,6 +79,8 @@ typedef NS_ENUM(NSInteger, DTKDropdownItemType) {
 /// icon
 @property (copy, nonatomic) NSString *iconName;
 @property (copy, nonatomic) NSString *iconNameSelected;
+@property (assign, nonatomic) CGFloat iconOffsetX;
+@property (assign, nonatomic) CGFloat titleOffsetX;
 /// selected
 @property (assign, nonatomic)  BOOL isSelected;
 /// info 自定义参数
