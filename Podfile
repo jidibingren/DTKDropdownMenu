@@ -5,6 +5,7 @@ platform :ios, '7.0'
 
 target 'DTKDropdownMenu' do
 pod 'Masonry', '~> 0.6.4'
+pod 'BlocksKit', '~> 2.2.5'
 end
 
 target 'DTKDropdownMenuTests' do

@@ -16,6 +16,11 @@ typedef enum : NSUInteger {
     dropDownTypeRightItem = 2,//rightBarItem
 } DTKDropDownType;
 
+typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
+    DTKDropdownBorderDefault = 0,
+    DTKDropdownBorderRect,
+};
+
 @interface DTKDropdownMenuView : UIView
 
 + (instancetype)dropdownMenuViewWithType:(DTKDropDownType)dropDownType frame:(CGRect)frame dropdownItems:(NSArray *)dropdownItems icon:(NSString *)icon;
@@ -24,6 +29,7 @@ typedef enum : NSUInteger {
 /// 当前Nav导航栏  
 @property(weak ,nonatomic) UINavigationController *currentNav;
 
+@property (assign ,nonatomic) DTKDropdownBorderType borderType;
 /// 当前选中index 默认是0
 @property (assign ,nonatomic) NSUInteger selectedIndex;
 /// titleColor 标题字体颜色  默认 白色
@@ -55,18 +61,29 @@ typedef enum : NSUInteger {
 
 @end
 
+typedef NS_ENUM(NSInteger, DTKDropdownItemType) {
+    DTKDropdownItemDefault = 0,
+    DTKDropdownItemButton,
+    DTKDropdownItemSwitch,
+};
+
 @interface DTKDropdownItem : NSObject
+
+@property (assign, nonatomic)  DTKDropdownItemType type;
 /// 回调 callBack
 @property (nonatomic, copy) dropMenuCallBack callBack;
 /// title
 @property (copy, nonatomic) NSString *title;
 /// icon
 @property (copy, nonatomic) NSString *iconName;
+@property (copy, nonatomic) NSString *iconNameSelected;
 /// selected
 @property (assign, nonatomic)  BOOL isSelected;
 /// info 自定义参数
 @property (strong, nonatomic) id info;
 
++ (instancetype)itemWithTitle:(NSString *)title iconName:(NSString *)iconName iconNameSelected:(NSString *)iconNameSelected type:(DTKDropdownItemType)type callBack:(dropMenuCallBack)callBack;
++ (instancetype)itemWithTitle:(NSString *)title type:(DTKDropdownItemType)type callBack:(dropMenuCallBack)callBack;
 + (instancetype)itemWithTitle:(NSString *)title iconName:(NSString *)iconName callBack:(dropMenuCallBack)callBack;
 + (instancetype)itemWithTitle:(NSString *)title callBack:(dropMenuCallBack)callBack;
 + (instancetype)Item;

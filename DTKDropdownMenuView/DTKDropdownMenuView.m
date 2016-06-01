@@ -8,6 +8,7 @@
 
 #import "DTKDropdownMenuView.h"
 #import "Masonry.h"
+#import "BlocksKit+UIKit.h"
 
 /**__weak  */
 #define menuWeakSelf(menuWeakSelf)  __weak __typeof(&*self)menuWeakSelf = self;
@@ -273,7 +274,19 @@ UITableViewDataSource
                          [menuWeakSelf.tableView layoutIfNeeded];
                          [menuWeakSelf.tableView reloadData];
                          CGRect bound = CGRectMake(0.f, 0.f, menuWeakSelf.dropWidth,DDP_TABLEVIEW_HEIGHT - 1.f );
-                         UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bound byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(6.f, 6.f)];
+                         UIBezierPath *maskPath;
+                         switch (self.borderType) {
+                             case DTKDropdownBorderDefault:
+                                 maskPath = [UIBezierPath bezierPathWithRoundedRect:bound byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(6.f, 6.f)];
+                                 break;
+                             case DTKDropdownBorderRect:
+                                 maskPath = [UIBezierPath bezierPathWithRect:bound];
+                                 break;
+                                 
+                             default:
+                                 break;
+                         }
+                         
                          CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
                          maskLayer.frame = bound;
                          maskLayer.path = maskPath.CGPath;
@@ -333,10 +346,117 @@ UITableViewDataSource
     if (!cell) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"DTKDropdownMenuViewCell"];
     }
-    DTKDropdownItem *item = self.items[indexPath.row];
-    cell.textLabel.text = item.title;
-    if (item.iconName.length) {
-        [cell.imageView setImage:[UIImage imageNamed:item.iconName]];
+    
+    for (UIView *subview in cell.contentView.subviews) {
+        [subview removeFromSuperview];
+    }
+    
+    __block DTKDropdownItem *item = self.items[indexPath.row];
+    
+    __weak DTKDropdownMenuView *wself = self;
+    switch (item.type) {
+        case DTKDropdownItemDefault:
+            
+            cell.textLabel.text = item.title;
+            if (item.iconName.length) {
+                [cell.imageView setImage:[UIImage imageNamed:item.iconName]];
+            }
+            
+            break;
+            
+        case DTKDropdownItemButton:{
+            
+            UIImage *image = [UIImage imageNamed:item.iconName];
+            UIImage *imageSelected = [UIImage imageNamed:item.iconNameSelected];
+            UIButton *button = [[UIButton alloc]init];
+            [button setImage:image forState:UIControlStateNormal];
+            [button setImage:imageSelected forState:UIControlStateSelected];
+            [cell.contentView addSubview:button];
+            [button mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(cell.contentView);
+                make.left.mas_equalTo(cell.contentView).offset(10);
+                make.size.mas_equalTo(CGSizeMake(image.size.width, image.size.height));
+            }];
+            
+            [button setSelected:item.isSelected];
+            
+            [button bk_whenTapped:^{
+            
+                DTKDropdownItem *item = wself.items[indexPath.row];
+                item.isSelected = !item.isSelected;
+                [button setSelected:item.isSelected];
+                wself.selectedIndex = indexPath.row;
+                
+                if (item.callBack) {
+                    item.callBack(indexPath.row,item.info);
+                }
+                
+            }];
+            
+            UILabel * textLabel = [UILabel new];
+            textLabel.font = self.textFont;
+            textLabel.textColor = self.textColor;
+            textLabel.text = item.title;
+            [cell.contentView addSubview:textLabel];
+            [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(cell.contentView);
+                make.left.mas_equalTo(button.mas_right).offset(10);
+                make.right.mas_equalTo(cell.contentView).offset(-10);
+                make.height.mas_equalTo(wself.cellHeight);
+            }];
+
+        }
+            break;
+            
+        case DTKDropdownItemSwitch:{
+            
+            UISwitch *switchBtn = [[UISwitch alloc]init];
+            [cell.contentView addSubview:switchBtn];
+            [switchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(cell.contentView);
+                make.left.mas_equalTo(cell.contentView).offset(10);
+                make.size.mas_equalTo(CGSizeMake(60, 30));
+            }];
+            
+            if (item.iconNameSelected.length){
+                [switchBtn setOnImage:[UIImage imageNamed:item.iconNameSelected]];
+            }
+            
+            if (item.iconName.length){
+                [switchBtn setOffImage:[UIImage imageNamed:item.iconName]];
+            }
+            
+            [switchBtn setOn:item.isSelected];
+            
+            [switchBtn bk_whenTapped:^{
+                
+                DTKDropdownItem *item = wself.items[indexPath.row];
+                item.isSelected = !item.isSelected;
+                [switchBtn setOn:item.isSelected];
+                wself.selectedIndex = indexPath.row;
+                
+                if (item.callBack) {
+                    item.callBack(indexPath.row,item.info);
+                }
+                
+            }];
+            
+            UILabel * textLabel = [UILabel new];
+            textLabel.font = self.textFont;
+            textLabel.textColor = self.textColor;
+            textLabel.text = item.title;
+            [cell.contentView addSubview:textLabel];
+            [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(cell.contentView);
+                make.left.mas_equalTo(switchBtn.mas_right);
+                make.right.mas_equalTo(cell.contentView).offset(-10);
+                make.height.mas_equalTo(wself.cellHeight);
+            }];
+        }
+            break;
+            
+        default:
+            break;
     }
     if (self.selectedIndex == indexPath.row&&self.showAccessoryCheckmark) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -363,6 +483,7 @@ UITableViewDataSource
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     DTKDropdownItem *item = self.items[indexPath.row];
     self.selectedIndex = indexPath.row;
+    item.isSelected = !item.isSelected;
     if (item.callBack) {
         item.callBack(indexPath.row,item.info);
     }
@@ -685,13 +806,22 @@ UITableViewDataSource
 }
 + (instancetype)itemWithTitle:(NSString *)title iconName:(NSString *)iconName callBack:(dropMenuCallBack)callBack
 {
+    return [self itemWithTitle:title iconName:iconName iconNameSelected:nil type:DTKDropdownItemDefault callBack:callBack];
+}
+
++ (instancetype)itemWithTitle:(NSString *)title type:(DTKDropdownItemType)type callBack:(dropMenuCallBack)callBack{
+    return [self itemWithTitle:title iconName:nil iconNameSelected:nil type:type callBack:callBack];
+}
+
++ (instancetype)itemWithTitle:(NSString *)title iconName:(NSString *)iconName iconNameSelected:(NSString *)iconNameSelected type:(DTKDropdownItemType)type callBack:(dropMenuCallBack)callBack{
     DTKDropdownItem *item = [DTKDropdownItem Item];
     item.title = title;
     item.iconName = iconName;
+    item.iconNameSelected = iconNameSelected;
+    item.type = type;
     item.callBack = callBack;
     return item;
 }
-
 
 @end
 
