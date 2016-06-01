@@ -12,4 +12,5 @@ Pod::Spec.new do |s|
   s.resources    = "DTKDropdownMenuView/DTKDropdownMenuView.bundle"
   s.dependency   'Masonry', '~> 0.6'
   s.requires_arc = true
+
 end
