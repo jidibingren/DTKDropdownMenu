@@ -428,18 +428,18 @@ UITableViewDataSource
             
             [switchBtn setOn:item.isSelected];
             
-            [switchBtn bk_whenTapped:^{
+            [switchBtn bk_addEventHandler:^(UISwitch *sender){
                 
                 DTKDropdownItem *item = wself.items[indexPath.row];
                 item.isSelected = !item.isSelected;
-                [switchBtn setOn:item.isSelected];
+                [sender setOn:item.isSelected];
                 wself.selectedIndex = indexPath.row;
                 
                 if (item.callBack) {
                     item.callBack(indexPath.row,item.info);
                 }
                 
-            }];
+            } forControlEvents:UIControlEventTouchUpInside];
             
             UILabel * textLabel = [UILabel new];
             textLabel.font = self.textFont;
