@@ -26,6 +26,9 @@ typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
 + (instancetype)dropdownMenuViewWithType:(DTKDropDownType)dropDownType frame:(CGRect)frame dropdownItems:(NSArray *)dropdownItems icon:(NSString *)icon;
 + (instancetype)dropdownMenuViewForNavbarTitleViewWithFrame:(CGRect )frame dropdownItems:(NSArray *)dropdownItems;
 
+- (void)hideMenu;
+- (void)showMenu;
+
 /// 当前Nav导航栏  
 @property(weak ,nonatomic) UINavigationController *currentNav;
 
