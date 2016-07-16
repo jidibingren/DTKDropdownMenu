@@ -14,6 +14,7 @@ typedef enum : NSUInteger {
     dropDownTypeTitle = 0,//navBar的titleView
     dropDownTypeLeftItem = 1,//leftBarItem
     dropDownTypeRightItem = 2,//rightBarItem
+    dropDownTypeSelf = 3,//self's dropdown menu
 } DTKDropDownType;
 
 typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {

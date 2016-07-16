@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "DTKDropdownMenu-JDBR"
-  s.version      = "0.3"
+  s.version      = "0.4"
   s.summary      = "DTKDropdownMenu extension"
   s.homepage     = "https://github.com/jidibingren/DTKDropdownMenu"
   s.license      = 'MIT'

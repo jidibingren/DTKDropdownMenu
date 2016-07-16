@@ -180,7 +180,6 @@ UITableViewDataSource
     }];
 }
 
-
 - (void)addWindowsSubviewsConstraints
 {
     UINavigationController *nav = nil;
@@ -205,7 +204,12 @@ UITableViewDataSource
     }];
     
     [self.tableViewTopArrow mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(navBar.mas_bottom);
+        if (_dropDownType == dropDownTypeSelf) {
+            make.top.equalTo(self.mas_bottom);
+        }else{
+            make.top.equalTo(navBar.mas_bottom);
+        }
+        
         if (self.dropDownType == dropDownTypeTitle) {
             make.centerX.equalTo(self.mas_centerX);
         }else{
