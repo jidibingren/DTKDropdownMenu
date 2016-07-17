@@ -14,7 +14,9 @@ typedef enum : NSUInteger {
     dropDownTypeTitle = 0,//navBar的titleView
     dropDownTypeLeftItem = 1,//leftBarItem
     dropDownTypeRightItem = 2,//rightBarItem
-    dropDownTypeSelf = 3,//self's dropdown menu
+    dropDownTypeSelfCenter = 3,// dropdown list alignment self's center
+    dropDownTypeSelfLeft   = 4,// dropdown list alignment self's left
+    dropDownTypeSelfRight  = 5,// dropdown list alignment self's right
 } DTKDropDownType;
 
 typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
@@ -38,6 +40,8 @@ typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
 /// titleFont  标题字体  默认 system 17
 @property (strong, nonatomic) UIFont  *titleFont;
 
+/// 箭头的水平偏移  默认0.f ，只对DTKDropDownType为Self*的类型起作用
+@property (assign, nonatomic) CGFloat topArrowOffset;
 /// 下拉菜单的宽度  默认80.f
 @property (assign, nonatomic) CGFloat dropWidth;
 /// 下拉菜单 cell 颜色  默认 白色
@@ -46,6 +50,8 @@ typedef NS_ENUM(NSInteger, DTKDropdownBorderType) {
 @property (strong, nonatomic) UIColor *textColor;
 /// 下拉菜单 cell 字体大小 默认 system 17.f
 @property (strong, nonatomic) UIFont  *textFont;
+/// 下拉菜单 cell 字体对齐 默认 system 17.f
+@property (assign, nonatomic) NSTextAlignment  textAlignment;
 /// 下拉菜单 cell seprator color 默认 白色
 @property (strong, nonatomic) UIColor *cellSeparatorColor;
 /// 下拉菜单 cell seprator color 默认 白色

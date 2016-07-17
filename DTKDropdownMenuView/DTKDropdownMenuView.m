@@ -107,6 +107,7 @@ UITableViewDataSource
     menuView.isMenuShow = NO;
     menuView.selectedIndex = 0;
     menuView.icon = icon;
+    menuView.textAlignment = NSTextAlignmentLeft;
     return menuView;
 }
 
@@ -204,7 +205,9 @@ UITableViewDataSource
     }];
     
     [self.tableViewTopArrow mas_updateConstraints:^(MASConstraintMaker *make) {
-        if (_dropDownType == dropDownTypeSelf) {
+        if (_dropDownType == dropDownTypeSelfCenter ||
+            _dropDownType == dropDownTypeSelfLeft ||
+            _dropDownType == dropDownTypeSelfRight) {
             make.top.equalTo(self.mas_bottom);
         }else{
             make.top.equalTo(navBar.mas_bottom);
@@ -244,6 +247,21 @@ UITableViewDataSource
             case dropDownTypeRightItem:
             {
                 make.right.equalTo(menuWeakSelf.wrapperView.mas_right).offset(-DDP_PADDING);
+            }
+                break;
+            case dropDownTypeSelfCenter:
+            {
+                make.centerX.equalTo(menuWeakSelf.mas_centerX).offset(self.topArrowOffset);
+            }
+                break;
+            case dropDownTypeSelfLeft:
+            {
+                make.left.equalTo(menuWeakSelf.mas_left).offset(self.topArrowOffset);
+            }
+                break;
+            case dropDownTypeSelfRight:
+            {
+                make.right.equalTo(menuWeakSelf.mas_right).offset(self.topArrowOffset);
             }
                 break;
             default:
@@ -370,6 +388,7 @@ UITableViewDataSource
         case DTKDropdownItemDefault:
             
             cell.textLabel.text = item.title;
+            cell.textLabel.textAlignment = self.textAlignment;
             if (item.iconName.length) {
                 [cell.imageView setImage:[UIImage imageNamed:item.iconName]];
             }
@@ -409,6 +428,7 @@ UITableViewDataSource
             textLabel.font = self.textFont;
             textLabel.textColor = self.textColor;
             textLabel.text = item.title;
+            textLabel.textAlignment = self.textAlignment;
             [cell.contentView addSubview:textLabel];
             [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
@@ -457,6 +477,7 @@ UITableViewDataSource
             textLabel.font = self.textFont;
             textLabel.textColor = self.textColor;
             textLabel.text = item.title;
+            textLabel.textAlignment = self.textAlignment;
             [cell.contentView addSubview:textLabel];
             [textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerY.mas_equalTo(cell.contentView);
